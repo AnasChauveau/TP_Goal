@@ -3,8 +3,18 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './styles.css'
 
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any;
+  }
+}
+
 function Jeu() {
     const navigate = useNavigate()
+
+    const [recognizedWord, setRecognizedWord] = useState('');
+    const [recognition, setRecognition] = useState(null)
+    const [recoStarted, setRecoStarted] = useState(false)
 
     const [boolShot, setBoolShot] = useState(true)
 
@@ -65,6 +75,24 @@ function Jeu() {
       }
     }, [myShot])
 
+    useEffect(() => {
+      const recognition = new window.webkitSpeechRecognition();
+      recognition.lang = 'fr-FR'; // Langue française, ajustez selon vos besoins
+      // console.log(recognition)
+      recognition.onresult = (event: any) => {
+        const last = event.results.length - 1;
+        const word = event.results[last][0].transcript.toLowerCase();
+        console.log(event.results)
+        setRecognizedWord(word);
+        // Ajoutez ici la logique pour déclencher une fonction en fonction du mot reconnu
+        if(word == "gauche" || word == "centre" || word == "droite"){
+          console.log(word)
+          setMyShot(word)
+        }
+      };
+      setRecognition(recognition)
+    }, []);
+
     return (
       <body id="bodyJeu">
         {restart == true 
@@ -86,10 +114,26 @@ function Jeu() {
                 </div>
                 <div className="allCenter">
                     <div id="ongletJeu">
-                        <div id="cageGauche" onClick={() => setMyShot("Gauche")}><img className="focus" src="public/img/focus.png"/></div>
-                        <div id="cageCentre" onClick={() => setMyShot("Centre")}><img id="gardien" src="public/img/gardien.png"/></div>
-                        <div id="cageDroite" onClick={() => setMyShot("Droite")}><img className="focus" src="public/img/focus.png"/></div>
+                        <div id="cageGauche" onClick={() => setMyShot("gauche")}><img className="focus" src="public/img/focus.png"/></div>
+                        <div id="cageCentre" onClick={() => setMyShot("centre")}><img id="gardien" src="public/img/gardien.png"/></div>
+                        <div id="cageDroite" onClick={() => setMyShot("droite")}><img className="focus" src="public/img/focus.png"/></div>
                     </div>
+                </div>
+                <div>
+                  <p>Le mot reconnu est : {recognizedWord}</p>
+                  <button onClick={() => {
+                    if(recoStarted){
+                        recognition && recognition.stop()
+                    }  
+                    else {
+                        recognition && recognition.start()
+                        setTimeout(() => {
+                            recognition.stop()
+                            setRecoStarted(false)
+                        }, 2000)
+                    }
+                    setRecoStarted(!recoStarted)
+                }}>{recoStarted ? "Stop" : "Start"}</button>
                 </div>
               </>
         }
