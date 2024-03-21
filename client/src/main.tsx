@@ -6,8 +6,10 @@ import{
 } from "react-router-dom"
 
 
-import './css/index.css'
-import App from './pages/App.tsx'
+import './index.css'
+import App from './pages/App'
+import Attente from './pages/Attente'
+import Jeu from './pages/Jeu'
 
 import { io } from 'socket.io-client'
 
@@ -17,6 +19,14 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+  },
+  {
+    path: "/attente",
+    element: <Attente />,
+  },
+  {
+    path: "/jeu",
+    element: <Jeu />,
   },
 ]);
 

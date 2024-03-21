@@ -1,13 +1,15 @@
 
+import {useNavigate } from 'react-router-dom'
 import './App.css'
 
 function App() {
+  const navigate = useNavigate()
 
   return (
-    <>
-        <a href='jeu.html'>
-          Commencer
-        </a>
+    <>   
+      <button onClick={() => navigate("/attente")}>
+        Commencer
+      </button>
     </>
   )
 }
